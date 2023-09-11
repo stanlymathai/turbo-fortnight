@@ -6,7 +6,7 @@ require('dotenv').config({ path: './config/env/local.env' });
 
 // db config.
 const db = require('./service/db');
-db.testConnection();
+db.test_conn();
 
 //  routes.
 const authRoute = require('./module/auth/router.auth/auth.router');
