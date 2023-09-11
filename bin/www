@@ -1,72 +1,36 @@
 #!/usr/bin/env node
 
-/**
- * Module dependencies.
- */
+const app = require('../src/app');
+const http = require('http');
 
-var app = require("../app");
-var http = require("http");
+const port = normalizePort(process.env.PORT || '8080');
+app.set('port', port);
 
-/**
- * Get port from environment and store in Express.
- */
-
-var port = normalizePort(process.env.PORT || "8080");
-app.set("port", port);
-
-/**
- * Create HTTP server.
- */
-
-var server = http.createServer(app);
-
-/**
- * Listen on provided port, on all network interfaces.
- */
-
+const server = http.createServer(app);
 server.listen(port);
-server.on("error", onError);
-server.on("listening", onListening);
 
-/**
- * Normalize a port into a number, string, or false.
- */
+server.on('error', onError);
+server.on('listening', onListening);
+
+process.on('SIGTERM', shutdown); // On process termination request (e.g., from Docker/K8s)
+process.on('SIGINT', shutdown); // On Ctrl+C
 
 function normalizePort(val) {
-  var port = parseInt(val, 10);
-
-  if (isNaN(port)) {
-    // named pipe
-    return val;
-  }
-
-  if (port >= 0) {
-    // port number
-    return port;
-  }
-
-  return false;
+  const parsedPort = parseInt(val, 10);
+  return isNaN(parsedPort) ? val : parsedPort;
 }
 
-/**
- * Event listener for HTTP server "error" event.
- */
-
 function onError(error) {
-  if (error.syscall !== "listen") {
-    throw error;
-  }
+  if (error.syscall !== 'listen') throw error;
 
-  var bind = typeof port === "string" ? "Pipe " + port : "Port " + port;
-
-  // handle specific listen errors with friendly messages
+  const bind = `Port ${port}`;
   switch (error.code) {
-    case "EACCES":
-      console.error(bind + " requires elevated privileges");
+    case 'EACCES':
+      console.error(`${bind} requires elevated privileges`);
       process.exit(1);
       break;
-    case "EADDRINUSE":
-      console.error(bind + " is already in use");
+    case 'EADDRINUSE':
+      console.error(`${bind} is already in use`);
       process.exit(1);
       break;
     default:
@@ -74,12 +38,16 @@ function onError(error) {
   }
 }
 
-/**
- * Event listener for HTTP server "listening" event.
- */
-
 function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
-  console.log("server is listening on " + bind);
+  const addr = server.address();
+  const bind = `port ${addr.port}`;
+  console.log(`Server is listening on ${bind}`);
+}
+
+function shutdown() {
+  console.log('Gracefully shutting down');
+  server.close(() => {
+    console.log('Closed out remaining connections');
+    process.exit(0);
+  });
 }

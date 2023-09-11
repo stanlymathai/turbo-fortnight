@@ -1,6 +1,6 @@
 const { conn } = require('../../../src/configs/db.config');
 
-const testing = async (_, res) => {
+const addPerson = async (_, res) => {
   let client;
   try {
     client = await conn.acquire();
@@ -39,4 +39,4 @@ const getPersons = async (_, res) => {
     }
   }
 };
-module.exports = { testing, getPersons };
+module.exports = { addPerson, getPersons };

@@ -18,6 +18,12 @@ ENV DB_PORT ${DB_PORT}
 ARG DB_INSTANCE
 ENV DB_INSTANCE ${DB_INSTANCE}
 
+# connection pool config
+ARG DB_POOL_MIN
+ENV DB_POOL_MIN ${DB_POOL_MIN}
+
+ARG DB_POOL_MAX
+ENV DB_POOL_MAX ${DB_POOL_MAX}
 
 # Create app directory
 WORKDIR /usr/src/app
