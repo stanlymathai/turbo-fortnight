@@ -1,4 +1,16 @@
+# Use multi-stage build to separate build and production stages
+
+# Build stage
+FROM node:16 AS build
+WORKDIR /usr/src/app
+
+# Copy only the package.json and package-lock.json first to leverage Docker cache
+COPY ["package.json", "package-lock.json", "./"]
+RUN npm install --verbose
+
+# Production stage
 FROM node:16
+WORKDIR /usr/src/app
 
 #Environment
 ARG NODE_ENV
@@ -25,21 +37,20 @@ ENV DB_POOL_MIN ${DB_POOL_MIN}
 ARG DB_POOL_MAX
 ENV DB_POOL_MAX ${DB_POOL_MAX}
 
-# Create app directory
-WORKDIR /usr/src/app
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-COPY ["package.json", "package-lock.json", "./"]
+# Copy node_modules from build stage
+COPY --from=build /usr/src/app/node_modules ./node_modules
 
-RUN npm install --verbose
-# If you are building your code for production
-# RUN npm ci --only=production
-
-# Bundle app source
+# Copy the rest of the application code
 COPY . .
 
+# Run as non-root user for security
+USER node
+
+# Expose the port the app runs on
 EXPOSE 8080
 
-CMD [ "node", "bin/www" ]
+# Add a health check command
+HEALTHCHECK --interval=12s --timeout=12s --start-period=30s CMD node ./src/utils/healthCheck.util.js
+
+CMD ["./bin/www"]
