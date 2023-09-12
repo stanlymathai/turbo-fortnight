@@ -1,42 +1,42 @@
-const { conn } = require('../../../src/configs/db.config');
+const {
+  addPersonVertex,
+  addRelationship,
+  getAllPersons,
+} = require('../services/person.service');
 
-const addPerson = async (_, res) => {
-  let client;
+async function addPerson(req, res) {
+  const personOne = req.body.personOne;
+  const personTwo = req.body.personTwo;
+
+  if (!personOne || !personTwo) {
+    return res
+      .status(400)
+      .send('Missing personOne or personTwo in request body.');
+  }
+
   try {
-    client = await conn.acquire();
-    const v1 = await client.g.addV('person').property('name', 'Jerry').next();
-    const v2 = await client.g.addV('person').property('name', 'Maquire').next();
+    const v1 = await addPersonVertex(req, personOne);
+    const v2 = await addPersonVertex(req, personTwo);
+    const result = await addRelationship(req, v1, v2, 0.75);
 
-    const result = await client.g
-      .V(v1.value)
-      .addE('knows')
-      .to(v2.value)
-      .property('weight', 0.75)
-      .iterate();
-
-    res.json(result);
+    res.status(201).json({v1, v2, result});
   } catch (error) {
     console.error('Error adding persons and relationship:', error);
     res.status(500).send('An error occurred while processing your request.');
-  } finally {
-    if (client) {
-      conn.release(client);
-    }
   }
-};
+}
 
-const getPersons = async (_, res) => {
-  let client;
+async function getPersons(req, res) {
   try {
-    client = await conn.acquire();
-    const result = await client.g.V().valueMap(true).toList();
-    res.json(result);
+    const persons = await getAllPersons(req);
+    res.json(persons);
   } catch (error) {
-    res.status(500).send(error.message);
-  } finally {
-    if (client) {
-      conn.release(client);
-    }
+    console.error('Error fetching persons:', error);
+    res.status(500).send('An error occurred while processing your request.');
   }
+}
+
+module.exports = {
+  addPerson,
+  getPersons,
 };
-module.exports = { addPerson, getPersons };

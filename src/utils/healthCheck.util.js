@@ -1,18 +1,19 @@
 const http = require('http');
 
-const HOST = process.env.HOST || 'localhost';
+const HOST = 'localhost';
 const PORT = process.env.PORT || '8080';
 const HEALTH_PATH = '/api/v1/health';
 const TIMEOUT = 2000; // 2 seconds
 const SUCCESS_CODE = 200;
 const MAX_RETRIES = 3;
+const METHOD = 'GET';
 
 let retries = 0;
 
 const options = {
   host: HOST,
-  method: 'GET',
   port: PORT,
+  method: METHOD,
   timeout: TIMEOUT,
   path: HEALTH_PATH,
 };
