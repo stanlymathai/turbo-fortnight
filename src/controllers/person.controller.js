@@ -1,7 +1,7 @@
 const {
   addPersonVertex,
   addRelationship,
-  getAllPersons,
+  getAllPersons,signUp,getProfileData,profileUpdate
 } = require('../services/person.service');
 
 async function addPerson(req, res) {
@@ -36,7 +36,57 @@ async function getPersons(req, res) {
   }
 }
 
+
+
+async function getProfile(req, res) {
+  try {
+    const persons = await getProfileData(req);
+    res.json(persons);
+  } catch (error) {
+    console.error('Error fetching persons:', error);
+    res.status(500).send('An error occurred while processing your request.');
+  }
+}
+
+async function signup(req, res) {
+  const signupData = req.body;
+  
+  if (!signupData) {
+    return res
+      .status(400)
+      .send('Missing signup data in request body.');
+  }
+
+  try {
+    const result = await signUp(req);
+   res.status(201).json({data:result});
+  } catch (error) {
+    console.error('Error adding persons and relationship:', error);
+    res.status(500).send('An error occurred while processing your request.');
+  }
+}
+
+
+async function updateProfile(req, res) {
+  const updateProfileData = req.body;
+  
+  if (!updateProfileData) {
+    return res
+      .status(400)
+      .send('Missing profile data in request body.');
+  }
+
+  try {
+    const result = await profileUpdate(req);
+   res.status(201).json({data:result});
+  } catch (error) {
+    console.error('Error adding persons and relationship:', error);
+    res.status(500).send('An error occurred while processing your request.');
+  }
+}
+
+
 module.exports = {
   addPerson,
-  getPersons,
+  getPersons,signup,getProfile,updateProfile
 };
