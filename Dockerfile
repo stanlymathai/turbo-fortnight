@@ -41,9 +41,6 @@ ENV DB_POOL_MIN ${DB_POOL_MIN}
 ARG DB_POOL_MAX
 ENV DB_POOL_MAX ${DB_POOL_MAX}
 
-ARG APP_KEY
-ENV APP_KEY ${APP_KEY}
-
 # Copy node_modules from build stage
 COPY --from=build /usr/src/app/node_modules ./node_modules
 
