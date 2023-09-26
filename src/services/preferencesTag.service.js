@@ -13,10 +13,16 @@ async function getPreferencesTagData(req) {
 }
 
 async function getUserTagData(req) {
-  return await req.dbClient.g.V().hasLabel('User')
-  .has('email',req.body.email)
+  const user=req.user.email;
+  const queryData = await req.dbClient.g.V().hasLabel('User')
+  .has('email',user)
   .out('TAGWITH')
   .valueMap(true).toList(); 
+  if(queryData.length >= 1){
+    return {"status":1,"data":queryData[0]};
+  }else{
+    return {"status":0,"data":queryData};
+  }
 }
 
 
@@ -38,11 +44,15 @@ if (!TagExists) {
   const queryData= await req.dbClient.g.addV('preferencesTag')
   .property('name', preferencesTag.name)
   .property('descriptions', preferencesTag.descriptions)
-  .next();
+  .valueMap(true).toList();
+  if(queryData.length >= 1){
+    return {"status":1,"data":queryData[0]};
+  }else{
+    return {"status":0,"data":queryData};
+  }
         return queryData;
 } else {
-  
-   return "This preferences tag is already exists"
+  return {"status":2,"data":"","msg":"This preferences tag is already exists"};
 }
 }
 
