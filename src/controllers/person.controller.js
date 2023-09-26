@@ -3,6 +3,7 @@ const {
   addRelationship,
   getAllPersons,signUp,getProfileData,profileUpdate
 } = require('../services/person.service');
+const constants  =require('../utils/responseMessage.util')
 
 async function addPerson(req, res) {
   const personOne = req.body.personOne;
@@ -48,23 +49,7 @@ async function getProfile(req, res) {
   }
 }
 
-async function signup(req, res) {
-  const signupData = req.body;
-  
-  if (!signupData) {
-    return res
-      .status(400)
-      .send('Missing signup data in request body.');
-  }
 
-  try {
-    const result = await signUp(req);
-   res.status(201).json({data:result});
-  } catch (error) {
-    console.error('Error adding persons and relationship:', error);
-    res.status(500).send('An error occurred while processing your request.');
-  }
-}
 
 
 async function updateProfile(req, res) {
@@ -78,15 +63,37 @@ async function updateProfile(req, res) {
 
   try {
     const result = await profileUpdate(req);
-   res.status(201).json({data:result});
+
+    if(result.status){
+      const responseData ={
+        "success": true,
+        'msg':constants.MESSAGES.DATA_UPDATED,
+        "data":result.data
+      }
+     res.status(201).json(responseData);
+    }
+    else{
+      const responseData ={
+        "success": false,
+        'msg':constants.MESSAGES.DATA_UPDATED,
+        "data":result.data
+      }
+     res.status(201).json(responseData);
+    }
+  
   } catch (error) {
     console.error('Error adding persons and relationship:', error);
-    res.status(500).send('An error occurred while processing your request.');
+    const responseData ={
+      "success": false,
+      'msg':'An error occurred while processing your request.',
+      "data":''
+    }
+   res.status(500).json(responseData);
   }
 }
 
 
 module.exports = {
   addPerson,
-  getPersons,signup,getProfile,updateProfile
+  getPersons,getProfile,updateProfile
 };

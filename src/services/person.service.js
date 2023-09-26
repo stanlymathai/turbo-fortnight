@@ -18,7 +18,7 @@ async function getAllPersons(req) {
 
 async function getProfileData(req) {
   return await req.dbClient.g.V().hasLabel('User')
-  .has('email', req.body.email).valueMap(true).toList();
+  .has('email', req.user.email).valueMap(true).toList();
 }
 
 async function signUp(req) {
@@ -54,24 +54,21 @@ if (!personExists) {
 
 async function profileUpdate(req) {
   const getData = req.body;
+  const user=req.user.email;
 
-  const personExists = await req.dbClient.g.V()
-  .hasLabel('User')
-  .has('email', getData.email)
-  .hasNext();
-
-if (personExists) {
   const queryData = await req.dbClient.g.V()
   .hasLabel('User')
-  .has('email', getData.email)
+  .has('email', user)
   .property('bannerImage', getData.bannerImage)
   .property('profileImage', getData.profileImage)
-  .property('profileDescription', getData.profileDescription).next();
-        return queryData;
-} else {
+  .property('profileDescription', getData.profileDescription).valueMap(true).toList();
+    
+        if(queryData.length >= 1){
+          return {"status":1,"data":queryData[0]};
+        }else{
+          return {"status":0,"data":queryData};
+        }
   
-   return "This email id is not exists"
-}
 }
 
 module.exports = {

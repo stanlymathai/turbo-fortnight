@@ -7,7 +7,7 @@ const peersRoute = require('../v1.route/peers.route');
 const preferencesTag = require('../v1.route/preferencesTag.route');
 const dbConnectionMiddleware = require('../../middlewares/db.middleware');
 
-router.use('/', authRoute);
+router.use('/auth',dbConnectionMiddleware, authRoute);
 
 router.use('/persons', dbConnectionMiddleware);
 router.use('/persons', personRoute);

@@ -4,7 +4,12 @@ const t = gremlin.process.t
 
 
 async function getPreferencesTagData(req) {
-  return await req.dbClient.g.V().hasLabel('preferencesTag').valueMap(true).toList();
+  const queryData= await req.dbClient.g.V().hasLabel('preferencesTag').valueMap(true).toList();
+  if(queryData.length >= 1){
+    return {"status":1,"data":queryData[0]};
+  }else{
+    return {"status":0,"data":queryData};
+  }
 }
 
 async function getUserTagData(req) {
@@ -42,7 +47,16 @@ if (!TagExists) {
 }
 
 async function addUserTag(req) {
-  return await req.dbClient.g.V().hasLabel('preferencesTag').has('name',req.body.tagName).as('a').V().hasLabel('User').has('email',req.body.personEmailId).addE('TAGWITH').to('a').property('createdDate',Date.now()).next();
+  const user=req.user.email;
+  const queryData = await req.dbClient.g.V().hasLabel('preferencesTag')
+  .has('name',req.body.tagName).as('a').V().hasLabel('User')
+  .has('email',user)
+  .addE('TAGWITH').to('a').property('createdDate',Date.now()).valueMap(true).toList();
+  if(queryData.length >= 1){
+    return {"status":1,"data":queryData[0]};
+  }else{
+    return {"status":0,"data":queryData};
+  }
 }
 
 module.exports = {

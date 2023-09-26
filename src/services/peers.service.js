@@ -2,24 +2,42 @@ const gremlin = require('gremlin');
 const P = gremlin.process.P;
 
 async function addRelationship(req) {
-  return await req.dbClient.g.V().hasLabel('User').has('email',req.body.peersEmailId).as('a').V().hasLabel('User').has('email',req.body.personEmailId).addE('FRIEND').to('a').next();
+  const user=req.user.email;
+  const queryData = await req.dbClient.g.V().hasLabel('User').has('email',req.body.peersEmailId).as('a').V().hasLabel('User').has('email',user).addE('FRIEND').to('a').valueMap(true).toList();
+  console.log("queryData",queryData);
+  if(queryData.length >= 1){
+    return {"status":1,"data":queryData[0]};
+  }else{
+    return {"status":0,"data":queryData};
+  }
 }
 
 
 async function userPeersList(req) {
-return await req.dbClient.g.V().hasLabel('User').has('email',req.body.email).as('user').  
+  const user=req.user.email;
+  const queryData = await req.dbClient.g.V().hasLabel('User').has('email',user).as('user').  
   both('FRIEND').aggregate('friends').  
   both('FRIEND').
     where(P.neq('user')).where(P.without('friends'))  
-  .valueMap(true).toList()
-
+  .valueMap(true).toList();
+  if(queryData.length >= 1){
+    return {"status":1,"data":queryData[0]};
+  }else{
+    return {"status":0,"data":queryData};
+  }
 }
 
 async function peersContactList(req) {
-  return await req.dbClient.g.V().hasLabel('User')
-  .has('email',req.body.email)
+  const user=req.user.email;
+  const queryData = await req.dbClient.g.V().hasLabel('User')
+  .has('email',user)
   .out('FRIEND')
-  .valueMap(true).toList();                
+  .valueMap(true).toList();  
+  if(queryData.length >= 1){
+    return {"status":1,"data":queryData[0]};
+  }else{
+    return {"status":0,"data":queryData};
+  }              
 }
 
 

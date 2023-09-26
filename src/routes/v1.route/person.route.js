@@ -1,11 +1,10 @@
 const express = require('express');
 const router = express.Router();
-
+const verify_token = require('../../middlewares/auth.middleware');
 const controller = require('../../controllers/person.controller');
 
-router.post('/', controller.addPerson);
-router.get('/', controller.getPersons);
-router.post('/signup', controller.signup);
-router.post('/getprofile', controller.getProfile);
-router.put('/updateprofile', controller.updateProfile);
+router.post('/',[verify_token], controller.addPerson);
+router.get('/',[verify_token], controller.getPersons);
+router.get('/getprofile',[verify_token], controller.getProfile);
+router.put('/updateprofile',[verify_token], controller.updateProfile);
 module.exports = router;
