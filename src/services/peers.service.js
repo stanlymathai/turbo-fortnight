@@ -3,8 +3,10 @@ const P = gremlin.process.P;
 
 async function addRelationship(req) {
   const user=req.user.email;
-  const queryData = await req.dbClient.g.V().hasLabel('User').has('email',req.body.peersEmailId).as('a').V().hasLabel('User').has('email',user).addE('FRIEND').to('a').valueMap(true).toList();
-  console.log("queryData",queryData);
+  const queryData = await req.dbClient.g.V().
+  hasLabel('User').has('email',req.body.peersEmailId).as('a')
+  .V().hasLabel('User').has('email',user)
+  .addE('FRIEND').to('a').property('createdDate',Date.now()).valueMap(true).toList();
   if(queryData.length >= 1){
     return {"status":1,"data":queryData[0]};
   }else{
@@ -15,7 +17,8 @@ async function addRelationship(req) {
 
 async function userPeersList(req) {
   const user=req.user.email;
-  const queryData = await req.dbClient.g.V().hasLabel('User').has('email',user).as('user').  
+  const queryData = await req.dbClient.g.V().hasLabel('User')
+  .has('email',user).as('user').  
   both('FRIEND').aggregate('friends').  
   both('FRIEND').
     where(P.neq('user')).where(P.without('friends'))  
