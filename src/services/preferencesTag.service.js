@@ -14,11 +14,11 @@ async function getPreferencesTagData(req) {
 }
 
 async function getUserTagData(req) {
-  const body=req.body;
+  const { preferences } = req.query;
   const user=req.user.email;
   const queryData = await req.dbClient.g.V().hasLabel('User')
   .has('email',user)
-  .out(body.preferences)
+  .out(preferences)
   .valueMap(true).toList(); 
     return {"status":1,"data":queryData};
 }
