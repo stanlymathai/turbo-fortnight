@@ -42,7 +42,7 @@ async function getTagList(req, res) {
     else{
       const responseData ={
         "success": false,
-        'msg':constants.MESSAGES.DATA_FOUND,
+        'msg':constants.MESSAGES.DATA_NOT_FOUND,
         "data":result.data
       }
      res.status(200).json(responseData);
@@ -68,7 +68,7 @@ async function getUserTagList(req, res) {
     else{
       const responseData ={
         "success": false,
-        'msg':constants.MESSAGES.DATA_FOUND,
+        'msg':constants.MESSAGES.DATA_NOT_FOUND,
         "data":result.data
       }
      res.status(200).json(responseData);

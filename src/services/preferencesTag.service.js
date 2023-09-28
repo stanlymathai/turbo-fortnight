@@ -4,22 +4,24 @@ const t = gremlin.process.t
 
 
 async function getPreferencesTagData(req) {
-  const queryData= await req.dbClient.g.V().hasLabel('preferencesTag').valueMap(true).toList();
+  const queryData= await req.dbClient.g.V().hasLabel('preferencesTag')
+  .valueMap(true).toList();
   if(queryData.length >= 1){
-    return {"status":1,"data":queryData[0]};
+    return {"status":1,"data":queryData};
   }else{
     return {"status":0,"data":queryData};
   }
 }
 
 async function getUserTagData(req) {
+  const body=req.body;
   const user=req.user.email;
   const queryData = await req.dbClient.g.V().hasLabel('User')
   .has('email',user)
-  .out('TAGWITH')
+  .out(body.preferences)
   .valueMap(true).toList(); 
   if(queryData.length >= 1){
-    return {"status":1,"data":queryData[0]};
+    return {"status":1,"data":queryData};
   }else{
     return {"status":0,"data":queryData};
   }
@@ -29,7 +31,8 @@ async function getUserTagData(req) {
 async function addpreferencesTag(req) {
   const preferencesTag = req.body;
 
-  const preferencesVertex = await req.dbClient.g.V().hasLabel('preferencesTag').hasNext();
+  const preferencesVertex = await req.dbClient.g.V().
+  hasLabel('preferencesTag').hasNext();
 
  if (!preferencesVertex) {
   await req.dbClient.g.addV().label('preferencesTag')
@@ -58,10 +61,13 @@ if (!TagExists) {
 
 async function addUserTag(req) {
   const user=req.user.email;
+  const body=req.body;
   const queryData = await req.dbClient.g.V().hasLabel('preferencesTag')
   .has('name',req.body.tagName).as('a').V().hasLabel('User')
   .has('email',user)
-  .addE('TAGWITH').to('a').property('createdDate',Date.now()).valueMap(true).toList();
+  .addE(body.preferences).to('a').property('createdDate',Date.now())
+  .valueMap(true).toList();
+
   if(queryData.length >= 1){
     return {"status":1,"data":queryData[0]};
   }else{
