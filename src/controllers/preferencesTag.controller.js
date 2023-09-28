@@ -56,24 +56,9 @@ async function getTagList(req, res) {
 
 async function getUserTagList(req, res) {
   try {
-    const result = await getUserTagData(req);
-    if(result.status){
-      const responseData ={
-        "success": true,
-        'msg':constants.MESSAGES.DATA_FOUND,
-        "data":result.data
-      }
-     res.status(200).json(responseData);
-    }
-    else{
-      const responseData ={
-        "success": false,
+    const persons = await getUserTagData(req);
+    res.json(persons);
         'msg':constants.MESSAGES.DATA_NOT_FOUND,
-        "data":result.data
-      }
-     res.status(200).json(responseData);
-    }
-   
   } catch (error) {
     console.error('Error fetching persons:', error);
     res.status(500).send('An error occurred while processing your request.');
@@ -91,31 +76,7 @@ async function addTag(req, res) {
 
   try {
     const result = await addpreferencesTag(req);
-    if(result.status == 1){
-      const responseData ={
-        "success": true,
-        'msg':constants.MESSAGES.DATA_FOUND,
-        "data":result.data
-      }
-     res.status(201).json(responseData);
-    }
-    else if(result.status == 2){
-      const responseData ={
-        "success": true,
-        'msg':result.msg,
-        "data":result.data
-      }
-     res.status(201).json(responseData);
-    }
-    else{
-      const responseData ={
-        "success": false,
-        'msg':constants.MESSAGES.DATA_FOUND,
-        "data":result.data
-      }
-     res.status(201).json(responseData);
-    }
-  
+   res.status(201).json({data:result});
   } catch (error) {
     console.error('Error Add Preferences Tag:', error);
     res.status(500).send('An error occurred while processing your request.');

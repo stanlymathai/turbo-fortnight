@@ -20,11 +20,7 @@ async function getUserTagData(req) {
   .has('email',user)
   .out(body.preferences)
   .valueMap(true).toList(); 
-  if(queryData.length >= 1){
     return {"status":1,"data":queryData};
-  }else{
-    return {"status":0,"data":queryData};
-  }
 }
 
 
@@ -47,15 +43,11 @@ if (!TagExists) {
   const queryData= await req.dbClient.g.addV('preferencesTag')
   .property('name', preferencesTag.name)
   .property('descriptions', preferencesTag.descriptions)
-  .valueMap(true).toList();
-  if(queryData.length >= 1){
-    return {"status":1,"data":queryData[0]};
-  }else{
-    return {"status":0,"data":queryData};
-  }
+  .next();
         return queryData;
 } else {
-  return {"status":2,"data":"","msg":"This preferences tag is already exists"};
+  
+   return "This preferences tag is already exists"
 }
 }
 
