@@ -75,8 +75,17 @@ await req.dbClient.g.V().
 
 }
 
+async function getUserPostData(req) {
+ 
+  const user=req.user.email;
+  const queryData = await req.dbClient.g.V().hasLabel('User')
+  .has('email',user)
+  .out('post')
+  .valueMap(true).toList(); 
+    return {"status":1,"data":queryData};
+}
 
 
 module.exports = {
-    addPostData
+    addPostData,getUserPostData
 };

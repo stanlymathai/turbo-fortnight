@@ -6,5 +6,6 @@ const  userFile  = require('../../middlewares/storage.middleware');
 
 
 router.post('/addpost',[verify_token,userFile], controller.addPost);
+router.get('/user_post_list',[verify_token], controller.getUserPostList);
 
 module.exports = router;
