@@ -1,5 +1,6 @@
 const multer = require('multer');
 const fs = require('fs');
+const path = require('path');
 
 const USER_FILE_PATH = 'uploads/user/';
 
@@ -16,47 +17,100 @@ const generateFileName = (req, file, cb) => {
   cb(null, file.fieldname + '-' + filename);
 };
 
-const fileFilter = (req, file, cb) => {
-  const extension = getFileType(file);
 
-  const allowedType = /jpeg|jpg|png/;
+// Configure multer storage and file name
+const storage = multer.diskStorage({
+  destination: USER_FILE_PATH,
+  filename: generateFileName
+});
 
-  const passed = allowedType.test(extension);
+// Create multer upload instance
+const upload = multer({ storage: storage });
 
-  if (passed) {
-    return cb(null, true);
+// Custom file upload middleware
+module.exports  = (req, res, next) => {
+  // Use multer upload instance
+  upload.fields([
+    { name: 'images', maxCount: 5 }, // Field name 'images', allow up to 5 files
+    { name: 'videos', maxCount: 3 }  // Field name 'videos', allow up to 3 files
+  ])(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({ error: err.message });
+    }
+   
+    // Retrieve uploaded files
+    let images = [];
+    let videos = [];
+     const errors = [];
+    if (req.files['images'] != null && req.files['images'] != undefined ) {
+     images = req.files['images'];
+    
+
+    // Validate file types and sizes
+    images.forEach((file) => {
+      const allowedTypes = ['image/jpeg', 'image/png'];
+      const maxSize = 5 * 1024 * 1024; // 5MB
+
+      if (!allowedTypes.includes(file.mimetype)) {
+        errors.push(`Invalid file type: ${file.originalname}`);
+      }
+
+      if (file.size > maxSize) {
+        errors.push(`File too large: ${file.originalname}`);
+      }
+    });
+
+    // Handle validation errors
+    if (errors.length > 0) {
+      // Remove uploaded files
+      images.forEach((file) => {
+        fs.unlinkSync(file.path);
+      });
+
+      return res.status(400).json({ errors });
+    }
+
+    // Attach files to the request object
+    req.files['images'] = images;
+    }
+    // validate for video 
+
+    if (req.files['videos'] != null && req.files['videos'] != undefined ) {
+    // Retrieve uploaded files
+       videos = req.files['videos'];
+   
+    // Validate file types and sizes
+    videos.forEach((file) => {
+      const allowedTypes = ['video/mp4', 'video/mpeg', 'video/webm', 'video/quicktime'];
+      const maxSize = 5 * 1024 * 1024; // 5MB
+
+      if (!allowedTypes.includes(file.mimetype)) {
+        errors.push(`Invalid file type: ${file.originalname}`);
+      }
+
+      if (file.size > maxSize) {
+        errors.push(`File too large: ${file.originalname}`);
+      }
+    });
+
+    // Handle validation errors
+    if (errors.length > 0) {
+      // Remove uploaded files
+      videos.forEach((file) => {
+        fs.unlinkSync(file.path);
+      });
+
+      return res.status(400).json({ errors });
+    }
   }
+    // Attach files to the request object
+    req.files['images'] = images;
+    req.files['videos'] = videos;
 
-  return cb(null, false);
+    // Proceed to the next middleware or route handler
+    next();
+  });
 };
 
-exports.userFile = (() => {
-  const storage = multer.diskStorage({
-    destination: USER_FILE_PATH,
-    filename: generateFileName,
-  });
 
-  return multer({ storage, fileFilter }).single('avatar');
-})();
 
-exports.chatFile = ((req, res, next) => {
-  const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      const { id } = req.body;
-      const dest = `uploads/chat/${id}`;
-
-      fs.access(dest, (error) => {
-        if (error) {
-          return fs.mkdir(dest, (error) => {
-            cb(error, dest);
-          });
-        } else {
-          return cb(null, dest);
-        }
-      });
-    },
-    filename: generateFileName,
-  });
-
-  return multer({ storage, fileFilter }).single('image');
-})();

@@ -1,7 +1,7 @@
 'use strict';
 
 const fs = require('fs');
-const config = require('../configs/env.config/aws.env');
+const config = require('../configs/env/aws.env');
 const { PutObjectCommand, S3Client } = require('@aws-sdk/client-s3');
 
 const {

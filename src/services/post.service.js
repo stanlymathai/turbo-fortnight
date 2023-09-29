@@ -1,7 +1,32 @@
 const gremlin = require('gremlin');
+const pushToS3 = require('../helpers/uploadToS3');
+
 const __ = gremlin.process.statics;
 
 async function addPostData(req) {
+  try {
+  const images = req.files['images'];
+  const videos = req.files['videos'];
+
+  const imagesS3 = await Promise.all(
+    images.map(async (item, index) => {
+        const s3Upload = await pushToS3({
+          fileName: item.filename,
+          filePath: item.path,
+        });
+      return s3Upload.upload;
+    })
+  );
+  const videosS3 = await Promise.all(
+    videos.map(async (item, index) => {
+        const s3Upload = await pushToS3({
+          fileName: item.filename,
+          filePath: item.path,
+        });
+      return s3Upload.upload;
+    })
+  );
+ 
   const user=req.user.email;
   const postData = req.body;
   const vertexLabel = 'post';  
@@ -9,8 +34,8 @@ async function addPostData(req) {
 const properties = {
     userId: req.user.userId,
     discriptions: postData.discriptions,
-    images: postData.images,
-    videos:postData.videos
+    images: imagesS3,
+    videos:videosS3
 };
 
  const newVertex = await req.dbClient.g.addV(vertexLabel);
@@ -42,7 +67,11 @@ await req.dbClient.g.V().
         }else{
           return {"status":0,"data":getpostData};
         }
-
+  }
+    catch (error) {
+          console.error('Error fetching persons:', error);
+          res.status(500).send('An error occurred while processing your request.');
+        }
 
 }
 
