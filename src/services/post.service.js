@@ -33,7 +33,7 @@ async function addPostData(req) {
 
 const properties = {
     userId: req.user.userId,
-    discriptions: postData.discriptions,
+    descriptions: postData.descriptions,
     images: imagesS3,
     videos:videosS3
 };

@@ -1,5 +1,6 @@
 const gremlin = require('gremlin');
-const P = gremlin.process.P;
+const {  P } = gremlin.process;
+
 
 async function addRelationship(req) {
   const user=req.user.email;
@@ -17,14 +18,15 @@ async function addRelationship(req) {
 
 async function userPeersList(req) {
   const user=req.user.email;
+  
   const queryData = await req.dbClient.g.V().hasLabel('User')
   .has('email',user).as('user').  
   both('FRIEND').aggregate('friends').  
-  both('FRIEND').
+  V().hasLabel('User').
     where(P.neq('user')).where(P.without('friends'))  
   .valueMap(true).toList();
   if(queryData.length >= 1){
-    return {"status":1,"data":queryData[0]};
+    return {"status":1,"data":queryData};
   }else{
     return {"status":0,"data":queryData};
   }
