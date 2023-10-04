@@ -39,7 +39,7 @@ async function peersContactList(req) {
   .out('FRIEND')
   .valueMap(true).toList();  
   if(queryData.length >= 1){
-    return {"status":1,"data":queryData[0]};
+    return {"status":1,"data":queryData};
   }else{
     return {"status":0,"data":queryData};
   }              
