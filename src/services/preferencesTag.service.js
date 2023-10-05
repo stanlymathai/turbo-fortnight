@@ -87,7 +87,8 @@ if (TagExists) {
             
         }
       
-        const queryData = await req.dbClient.g.V().hasLabel('User').has('email',user).valueMap(true).toList();
+        const queryData = await req.dbClient.g.V().hasLabel('User').has('email',user)
+        .valueMap('tagDisLike','tagLike').toList();
         return {"status":1,"data":queryData};
         
         }else{
@@ -95,7 +96,8 @@ if (TagExists) {
           await req.dbClient.g.V().hasLabel('User').has('email',user)
           .property('tagDisLike', '').iterate();
          
-          const queryData = await req.dbClient.g.V().hasLabel('User').has('email',user).valueMap(true).toList();
+          const queryData = await req.dbClient.g.V().hasLabel('User')
+          .has('email',user).valueMap('tagDisLike','tagLike').toList();
           return {"status":1,"data":queryData};
         }
      }else if(req.body.preferences == 'dislike'){
@@ -123,14 +125,14 @@ if (TagExists) {
        
       }
      
-      const queryData = await req.dbClient.g.V().hasLabel('User').has('email',user).valueMap(true).toList();
+      const queryData = await req.dbClient.g.V().hasLabel('User')
+      .has('email',user).valueMap('tagDisLike','tagLike').toList();
       return {"status":1,"data":queryData};
       
       }else{
       
-        await req.dbClient.g.V().hasLabel('User').has('email',user)
-        .property('tagLike','').iterate();
-        const queryData = await req.dbClient.g.V().hasLabel('User').has('email',user).valueMap(true).toList();
+        const queryData = await req.dbClient.g.V().hasLabel('User')
+        .has('email',user).valueMap('tagDisLike','tagLike').toList();
         return {"status":1,"data":queryData};
       }
 
@@ -148,12 +150,11 @@ if (TagExists) {
 async function deleteUserTagService(req) {
   const user=req.user.email;
   const body=req.body;
-  console.log("body",body);
   const TagExists = await req.dbClient.g.V()
   .hasLabel('preferencesTag')
   .has('name',req.body.tagName)
   .hasNext();
-  console.log("TagExists",TagExists);
+ 
 if (TagExists) {
      if(req.body.deletePreferences == 'like'){
       const result = await req.dbClient.g.V().hasLabel('User')
@@ -177,15 +178,16 @@ if (TagExists) {
             
         }
       
-        const queryData = await req.dbClient.g.V().hasLabel('User').has('email',user).valueMap(true).toList();
+        const queryData = await req.dbClient.g.V().hasLabel('User')
+        .has('email',user).valueMap('tagDisLike','tagLike').toList();
         return {"status":1,"data":queryData};
         
         }else{
          
-          await req.dbClient.g.V().hasLabel('User').has('email',user)
-          .property('tagDisLike', '').iterate();
          
-          const queryData = await req.dbClient.g.V().hasLabel('User').has('email',user).valueMap(true).toList();
+         
+          const queryData = await req.dbClient.g.V().hasLabel('User')
+          .has('email',user).valueMap('tagDisLike','tagLike').toList();
           return {"status":1,"data":queryData};
         }
      }else if(req.body.deletePreferences == 'dislike'){
@@ -212,14 +214,16 @@ if (TagExists) {
        
       }
      
-      const queryData = await req.dbClient.g.V().hasLabel('User').has('email',user).valueMap(true).toList();
+      const queryData = await req.dbClient.g.V().hasLabel('User')
+      .has('email',user).valueMap('tagDisLike','tagLike').toList();
       return {"status":1,"data":queryData};
       
       }else{
       
         await req.dbClient.g.V().hasLabel('User').has('email',user)
         .property('tagLike','').iterate();
-        const queryData = await req.dbClient.g.V().hasLabel('User').has('email',user).valueMap(true).toList();
+        const queryData = await req.dbClient.g.V().hasLabel('User')
+        .has('email',user).valueMap('tagDisLike','tagLike').toList();
         return {"status":1,"data":queryData};
       }
 
