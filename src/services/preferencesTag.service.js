@@ -13,11 +13,16 @@ async function getPreferencesTagData(req) {
 
 async function getUserTagData(req) {
   const { preferences } = req.query;
+   let columnData;
+        if(preferences == 'dislike'){
+          columnData = 'tagDisLike';
+        }else if (preferences == 'like'){
+          columnData = 'tagLike';
+        }
   const user=req.user.email;
   const queryData = await req.dbClient.g.V().hasLabel('User')
   .has('email',user)
-  .out(preferences)
-  .valueMap(true).toList(); 
+  .valueMap(columnData).toList(); 
     return {"status":1,"data":queryData};
 }
 
