@@ -24,6 +24,8 @@ module.exports = {
         DATA_FOUND: 'data found',
         DATA_NOT_ADDED: 'data not added',
         DATA_ADDED: 'data added',
+        DATA_DELETE: 'data deleted',
+        DATA_NOT_DELETE: 'data not deleted',
         
     }
 }

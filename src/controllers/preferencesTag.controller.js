@@ -1,5 +1,6 @@
 const {
-  getPreferencesTagData,addpreferencesTag,addUserTag,getUserTagData
+  getPreferencesTagData,addpreferencesTag
+  ,addUserTag,getUserTagData,deleteUserTagService
 } = require('../services/preferencesTag.service');
 const constants  =require('../utils/responseMessage.util')
 
@@ -27,6 +28,32 @@ async function userAddTag(req, res) {
     res.status(500).send('An error occurred while processing your request.');
   }
 }
+
+async function deleteUserTagList(req, res) {
+  try {
+    const result = await deleteUserTagService(req);
+    if(result.status){
+      const responseData ={
+        "success": true,
+        'msg':constants.MESSAGES.DATA_DELETE,
+        "data":result.data
+      }
+     res.status(200).json(responseData);
+    }
+    else{
+      const responseData ={
+        "success": false,
+        'msg':constants.MESSAGES.DATA_NOT_DELETE,
+        "data":result.data
+      }
+     res.status(200).json(responseData);
+    }
+  } catch (error) {
+    console.error('Error fetching persons:', error);
+    res.status(500).send('An error occurred while processing your request.');
+  }
+}
+
 
 async function getTagList(req, res) {
   try {
@@ -100,5 +127,6 @@ async function addTag(req, res) {
 
 
 module.exports = {
-  getTagList,addTag,userAddTag,getUserTagList
+  getTagList,addTag,userAddTag
+  ,getUserTagList,deleteUserTagList
 };
