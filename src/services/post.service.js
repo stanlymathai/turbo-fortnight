@@ -35,7 +35,9 @@ const properties = {
     userId: req.user.userId,
     descriptions: postData.descriptions,
     images: imagesS3,
-    videos:videosS3
+    videos:videosS3,
+    polls:postData.polls,
+    createdDate :postData.createdDate
 };
 
  const newVertex = await req.dbClient.g.addV(vertexLabel);
@@ -78,10 +80,15 @@ await req.dbClient.g.V().
 async function getUserPostData(req) {
  
   const user=req.user.email;
-  const queryData = await req.dbClient.g.V().hasLabel('User')
-  .has('email',user)
-  .out('post')
-  .valueMap(true).toList(); 
+  const queryData = await req.dbClient.g.V()
+  .hasLabel('User')
+  .has('email', user)
+  .as('user')
+  .out('post').as('post')
+  .select('user', 'post')
+  .by(__.valueMap('firstName','lastName','profileImage'))
+  .by(__.valueMap(true))
+  .toList(); 
     return {"status":1,"data":queryData};
 }
 

@@ -70,7 +70,6 @@ async function getProfile(req, res) {
 
 async function updateProfile(req, res) {
   const updateProfileData = req.body;
-  
   if (!updateProfileData) {
     return res
       .status(400)
