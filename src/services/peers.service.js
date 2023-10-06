@@ -7,7 +7,7 @@ async function addRelationship(req) {
   const queryData = await req.dbClient.g.V().
   hasLabel('User').has('email',req.body.peersEmailId).as('a')
   .V().hasLabel('User').has('email',user)
-  .addE('FRIEND').to('a').property('createdDate',Date.now()).valueMap('residency','lastName','profileDescription','id','dateOfBirth','profileImage','tagDisLike'
+  .addE('FRIEND').to('a').property('createdDate',Date.now()).valueMap(true,'residency','lastName','profileDescription','id','dateOfBirth','profileImage','tagDisLike'
   ,'firstName','bannerImage','tagLike','profileImages','gender','email').toList();
   if(queryData.length >= 1){
     return {"status":1,"data":queryData[0]};
@@ -25,7 +25,7 @@ async function userPeersList(req) {
   both('FRIEND').aggregate('friends').  
   V().hasLabel('User').
     where(P.neq('user')).where(P.without('friends'))  
-  .valueMap('residency','lastName','profileDescription','id','dateOfBirth','profileImage','tagDisLike'
+  .valueMap(true,'residency','lastName','profileDescription','id','dateOfBirth','profileImage','tagDisLike'
   ,'firstName','bannerImage','tagLike','profileImages','gender','email').toList();
   if(queryData.length >= 1){
     return {"status":1,"data":queryData};
@@ -39,7 +39,7 @@ async function peersContactList(req) {
   const queryData = await req.dbClient.g.V().hasLabel('User')
   .has('email',user)
   .out('FRIEND')
-  .valueMap('residency','lastName','profileDescription','id','dateOfBirth','profileImage','tagDisLike'
+  .valueMap(true,'residency','lastName','profileDescription','id','dateOfBirth','profileImage','tagDisLike'
   ,'firstName','bannerImage','tagLike','profileImages','gender','email').toList();  
   if(queryData.length >= 1){
     return {"status":1,"data":queryData};
