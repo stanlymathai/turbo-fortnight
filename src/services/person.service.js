@@ -1,7 +1,6 @@
 const gremlin = require('gremlin');
 const pushToS3 = require('../helpers/uploadToS3');
 const __ = gremlin.process.statics;
-
 async function addPersonVertex(req, name) {
   return await req.dbClient.g.addV('person').property('name', name).next();
 }
@@ -22,7 +21,8 @@ async function getAllPersons(req) {
 async function getProfileData(req) {
   const user=req.user.email;
   const queryData= await req.dbClient.g.V().hasLabel('User')
-  .has('email', user).valueMap(true).toList();
+  .has('email', user).valueMap('residency','lastName','profileDescription','id','dateOfBirth','profileImage','tagDisLike'
+  ,'firstName','bannerImage','tagLike','profileImages','gender','email').toList();
   if(queryData.length >= 1){
     return {"status":1,"data":queryData[0]};
   }else{
