@@ -59,16 +59,16 @@ async function profileUpdate(req) {
             updatedArr.profileDescription = getData.profileDescription;
           }
           if(profileImages.length >=1){
-            updatedArr.profileImages = profileImagesS3[0];
+            updatedArr.profileImage = profileImagesS3[0];
           }else if(getData.profileImagesDeleted == true ||getData.profileImagesDeleted == 'true'){
-            updatedArr.profileImages = 'https://development-social-api.s3.eu-west-1.amazonaws.com/profileImages-1696570918657-538263390.png';
+            updatedArr.profileImage = 'https://development-social-api.s3.eu-west-1.amazonaws.com/profileImages-1696570918657-538263390.png';
           }
           if(bannerImages.length >=1){
             updatedArr.bannerImage = bannerImagesS3[0];
           }else if(getData.bannerImageDeleted == true || getData.bannerImageDeleted == 'true'){
             updatedArr.bannerImage = 'https://development-social-api.s3.eu-west-1.amazonaws.com/bannerImages-1696570918658-93600761.jpeg';
           }
-           
+
          await Promise.all(
           Object.entries(updatedArr).map(async ([key, value]) => {
             // console.log(`${key}: ${value}`);
@@ -86,7 +86,7 @@ async function profileUpdate(req) {
             );
          const queryData =  await req.dbClient.g.V()
          .hasLabel('User').has('email',user)
-         .valueMap('profileDescription','profileImages','bannerImage').toList();
+         .valueMap('profileDescription','profileImage','bannerImage').toList();
     
         if(queryData.length >= 1){
           return {"status":1,"data":queryData};
