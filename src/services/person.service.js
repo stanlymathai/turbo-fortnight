@@ -22,7 +22,7 @@ async function getProfileData(req) {
   const user=req.user.email;
   const queryData= await req.dbClient.g.V().hasLabel('User')
   .has('email', user).valueMap(true,'residency','lastName','profileDescription','id','dateOfBirth','profileImage','tagDisLike'
-  ,'firstName','bannerImage','tagLike','profileImages','gender','email').toList();
+  ,'firstName','bannerImage','tagLike','gender','email').toList();
   if(queryData.length >= 1){
     return {"status":1,"data":queryData[0]};
   }else{

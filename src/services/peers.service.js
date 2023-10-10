@@ -8,7 +8,7 @@ async function addRelationship(req) {
   hasLabel('User').has('email',req.body.peersEmailId).as('a')
   .V().hasLabel('User').has('email',user)
   .addE('FRIEND').to('a').property('createdDate',Date.now()).valueMap(true,'residency','lastName','profileDescription','id','dateOfBirth','profileImage','tagDisLike'
-  ,'firstName','bannerImage','tagLike','profileImages','gender','email').toList();
+  ,'firstName','bannerImage','tagLike','gender','email').toList();
   if(queryData.length >= 1){
     return {"status":1,"data":queryData[0]};
   }else{
@@ -26,7 +26,7 @@ async function userPeersList(req) {
   V().hasLabel('User').
     where(P.neq('user')).where(P.without('friends'))  
   .valueMap(true,'residency','lastName','profileDescription','id','dateOfBirth','profileImage','tagDisLike'
-  ,'firstName','bannerImage','tagLike','profileImages','gender','email').toList();
+  ,'firstName','bannerImage','tagLike','gender','email').toList();
   if(queryData.length >= 1){
     return {"status":1,"data":queryData};
   }else{
@@ -40,7 +40,7 @@ async function peersContactList(req) {
   .has('email',user)
   .out('FRIEND')
   .valueMap(true,'residency','lastName','profileDescription','id','dateOfBirth','profileImage','tagDisLike'
-  ,'firstName','bannerImage','tagLike','profileImages','gender','email').toList();  
+  ,'firstName','bannerImage','tagLike','gender','email').toList();  
   if(queryData.length >= 1){
     return {"status":1,"data":queryData};
   }else{
