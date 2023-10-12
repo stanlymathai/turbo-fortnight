@@ -1,4 +1,5 @@
-
+const { v4: uuidv4 } = require('uuid');
+const defaut =require('../utils/defaultValue.util');
 async function signUp(req) {
   const signupData = req.body;
 
@@ -22,10 +23,16 @@ if (!personExists) {
   .property('email', signupData.email)
   .property('dateOfBirth', signupData.dateOfBirth)
   .property('residency', signupData.residency)
-  .property('bannerImage', signupData.bannerImage)
-  .property('profileImage', signupData.profileImage)
+  .property('bannerImage', defaut.IMAGE_PATH.PROFILE_BANNER_IMAGE)
+  .property('profileImage', defaut.IMAGE_PATH.PROFILE_IMAGE)
+  .property('secretOrKey', uuidv4())
+  .property('status', 'ACTIVE')
   .property('profileDescription', signupData.profileDescription).next();
-        return {"status":1,"data":queryData,"msg":"successfully registered"};
+
+  const getsignUpData = await req.dbClient.g.V().hasLabel('User')
+  .has('email',signupData.email).valueMap(true).toList(); 
+
+        return {"status":1,"data":getsignUpData,"msg":"successfully registered"};
 } else {
   return {"status":0,"data":"","msg":"This email id is already exists"};
 }

@@ -26,6 +26,8 @@ module.exports = {
         DATA_ADDED: 'data added',
         DATA_DELETE: 'data deleted',
         DATA_NOT_DELETE: 'data not deleted',
+        PEERS_REQUEST_ADDED: 'peers request added successfully',
+        PEERS_REQUEST_NOT_ADDED: 'peers request not added',
         
     }
 }

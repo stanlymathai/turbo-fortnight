@@ -18,16 +18,15 @@ async function signup(req, res) {
   try {
     const result = await signUp(req);
             if(result.status){
-               const getResultData=JSON.parse(JSON.stringify(result));
               const resultData = {
                 user: {
-                  userId:getResultData.data.value.id,
+                  userId:result.data[0].id,
                   firstName: req.body.firstName,
                   lastName: req.body.lastName,
                   gender: req.body.gender,
-                  email: req.body.email,
+                  email: req.body.email
                 },
-                token: generate_token({ email: req.body.email,userId:getResultData.data.value.id }),
+                token: generate_token({ secretOrKey: result.data[0].secretOrKey[0]}),
               };
               const responseData ={
                 "success": true,
@@ -53,6 +52,7 @@ async function signup(req, res) {
 async function login(req, res) {
   const payload = req.body;
   try {
+   
   const _doc = await verfiryLogin(req);
       if (_doc) {
         if (_doc[0].password[0] === payload.password) {
@@ -64,7 +64,7 @@ async function login(req, res) {
               email: _doc[0].email[0],
               id: _doc[0].id,
             },
-            token: generate_token({ email: _doc[0].email[0],userId:_doc[0].id })
+            token: generate_token({ secretOrKey: _doc[0].secretOrKey[0]})
           };
           res.status(200).json(responseData);
         } else {

@@ -1,6 +1,9 @@
 const gremlin = require('gremlin');
 const pushToS3 = require('../helpers/uploadToS3');
+const defaut =require('../utils/defaultValue.util');
 const __ = gremlin.process.statics;
+
+
 async function addPersonVertex(req, name) {
   return await req.dbClient.g.addV('person').property('name', name).next();
 }
@@ -61,12 +64,12 @@ async function profileUpdate(req) {
           if(profileImages.length >=1){
             updatedArr.profileImage = profileImagesS3[0];
           }else if(getData.profileImagesDeleted == true ||getData.profileImagesDeleted == 'true'){
-            updatedArr.profileImage = 'https://development-social-api.s3.eu-west-1.amazonaws.com/profileImages-1696570918657-538263390.png';
+            updatedArr.profileImage = defaut.IMAGE_PATH.PROFILE_IMAGE;
           }
           if(bannerImages.length >=1){
             updatedArr.bannerImage = bannerImagesS3[0];
           }else if(getData.bannerImageDeleted == true || getData.bannerImageDeleted == 'true'){
-            updatedArr.bannerImage = 'https://development-social-api.s3.eu-west-1.amazonaws.com/bannerImages-1696570918658-93600761.jpeg';
+            updatedArr.bannerImage = defaut.IMAGE_PATH.PROFILE_BANNER_IMAGE;
           }
 
          await Promise.all(
